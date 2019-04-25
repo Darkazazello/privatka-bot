@@ -44,7 +44,7 @@
 (defn send-information [point]
   (do
     (t/send-text token cpu-chat (get point "text"))
-    (t/send-photo token cpu-chat (io/file (slurp (io/resource (first (get point "files"))))))
+    (t/send-document token cpu-chat (io/file (slurp (io/resource (first (get point "files"))))))
       )
   )
 
