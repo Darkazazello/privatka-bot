@@ -34,7 +34,7 @@
       (print "Wrong" code)
       (let [points (:points task)
             size (count points)
-            r (rand-int n)
+            r (rand-int size)
             ]
         (nth points r)
         )
