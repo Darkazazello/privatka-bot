@@ -2,7 +2,8 @@
   (ns user
       (:require [morse.handlers :as h]
                 [morse.api :as t]
-                [environ.core :refer [env]]))
+                [environ.core :refer [env]]
+                [compojure.route :as route]))
 
   (def token (env :token))
 
@@ -29,4 +30,7 @@
 
     ; So match-all catch-through case would look something like this:
                 (h/message message (println "Intercepted message:" message)))
-  (t/set-webhook token "https://privatka-bot.herokuapp.com/handler"))
+  (defroutes app-routes
+             (POST "/handler" {{updates :result} :body} (map bot-api updates))
+             (route/not-found "Not Found"))
+  )
