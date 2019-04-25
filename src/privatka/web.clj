@@ -38,7 +38,7 @@
               (h/message message (println "Intercepted message:" message)))
 
 (defroutes app
-           (POST "/handler" req  (do (println req) (map bot-api req) ))
+           (POST "/handler" {body :body}  (let (d [(-> body slurp json/read-str)] )) (do (println d) (map bot-api d) ))
            (ANY "/repl" {:as req}
              (drawbridge req))
            (GET "/" []
