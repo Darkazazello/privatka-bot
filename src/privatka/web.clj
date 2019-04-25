@@ -26,7 +26,7 @@
   (GET "/" []
        {:status 200
         :headers {"Content-Type" "text/plain"}
-        :body (pr-str ["Hello" :from 'Heroku ((env :token))])})
+        :body (pr-str ["Hello" :from 'Heroku (env :token)])})
   (ANY "*" []
        (route/not-found (slurp (io/resource "404.html")))))
 
