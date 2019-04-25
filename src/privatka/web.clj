@@ -16,7 +16,8 @@
             [morse.handlers :as h]
             [morse.polling :as p]
             [clojure.data.json :as json]
-            [clojure.stacktrace]))
+            [clojure.stacktrace]
+            [clj-http.client :as client]))
 (def token (env :token))
 (defn- authenticated? [user pass]
   ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
@@ -27,7 +28,7 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
-(def tasks (-> "tasks.json" io/resource slurp json/read-str) )
+(def tasks (-> "tasks.json" io/resource slurp json/read-str))
 
 (defn process-code [code]
   (let [t (get tasks "scenario")
@@ -41,25 +42,22 @@
 
 (def cpu-chat "-325190028")
 
+(defn send-photo [file]
+  (client/post (str "https://api.telegram.org/bot" token "/sendPhoto")
+               {:multipart    [{:name "title" :content "Point"}
+                               {:name "chat_id" :content cpu-chat}
+                               {:name "photo" :content (io/file (io/resource file))}]
+                })
+  )
+
 (defn send-information [point]
   (do
     (t/send-text token cpu-chat (get point "text"))
-    (t/send-document token cpu-chat (io/file (slurp (io/resource (first (get point "files"))))))
-      )
+    (send-photo (first (get point "files")))
+    )
   )
 
-(h/defhandler bot-api
-              (h/command-fn "start" (fn [{{id :id :as chat} :chat}]
-                                      (println "Bot joined new chat: " chat)
-                                      (t/send-text token id "Welcome!")))
-
-              (h/command "help" {{id :id :as chat} :chadt}
-                         (println "Help was requested in " chat)
-                         (t/send-text token id "Help is on the way"))
-
-              (h/message message
-                         ))
-(defn core[message]
+(defn core [message]
   (do
     (println "Intercepted message:" message)
     (try
@@ -76,13 +74,13 @@
                        command (get (get a "message") "text")]
                    (core command)))
            (ANY "/repl" {:as req}
-             (drawbridge req))
+                (drawbridge req))
            (GET "/" []
-             {:status  200
-              :headers {"Content-Type" "text/plain"}
-              :body    (pr-str ["Hello" :from 'Heroku (env :token)])})
+                {:status  200
+                 :headers {"Content-Type" "text/plain"}
+                 :body    (pr-str ["Hello" :from 'Heroku (env :token)])})
            (ANY "*" []
-             (route/not-found (slurp (io/resource "404.html")))))
+                (route/not-found (slurp (io/resource "404.html")))))
 
 (defn wrap-error-page [handler]
   (fn [req]

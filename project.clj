@@ -12,7 +12,8 @@
                  [environ "0.5.0"]
                  [com.cemerick/drawbridge "0.0.6"]
                  [morse "0.4.2"]
-                 [org.clojure/data.json "0.2.6"]]
+                 [org.clojure/data.json "0.2.6"]
+                 [clj-http "3.9.1"]]
   :min-lein-version "2.0.0"
   :plugins [[environ/environ.lein "0.2.1"]]
   :hooks [environ.leiningen.hooks]
