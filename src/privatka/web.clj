@@ -11,7 +11,7 @@
             [cemerick.drawbridge :as drawbridge]
             [environ.core :refer [env]]
             [morse.api :as t]))
-
+(def token (env :token))
 (defn- authenticated? [user pass]
   ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
   (= [user pass] [(env :repl-user false) (env :repl-password false)]))
