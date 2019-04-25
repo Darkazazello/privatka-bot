@@ -64,7 +64,7 @@
     (try
       (let [point (process-code message)]
         (if-not (nil? point) (send-information point)))
-      (catch Exception e (println (.getMessage e)))
+      (catch Exception e (println (.getMessage e) (print-stack-trace e)))
       )
     {:status 200}
     )
