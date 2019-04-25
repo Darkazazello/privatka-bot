@@ -29,4 +29,5 @@
 
     ; So match-all catch-through case would look something like this:
                 (h/message message (println "Intercepted message:" message)))
+  (t/set-webhook token "https://privatka-bot.herokuapp.com/")
   )
