@@ -65,13 +65,15 @@
       (let [point (process-code message)]
         (if-not (nil? point) (send-information point)))
       (catch Exception e (println (.getMessage e)))
-      ))
+      )
+    {:status 200}
+    )
   )
 (defroutes app
            (POST "/handler" {body :body}
                  (let [a (-> body slurp json/read-str)
                        command (get (get a "message") "text")]
-                   (core command)) {:status 200})
+                   (core command)))
            (ANY "/repl" {:as req}
              (drawbridge req))
            (GET "/" []
