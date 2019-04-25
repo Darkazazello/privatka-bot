@@ -13,7 +13,9 @@
             [cemerick.drawbridge :as drawbridge]
             [environ.core :refer [env]]
             [morse.api :as t]
-            [morse.handlers :as h]))
+            [morse.handlers :as h]
+            [morse.polling :as p]
+            [clojure.data.json :as json]))
 (def token (env :token))
 (defn- authenticated? [user pass]
   ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
@@ -36,7 +38,7 @@
               (h/message message (println "Intercepted message:" message)))
 
 (defroutes app
-           (POST "/handler" {body :body} (let [command (slurp body)] (println command) (map bot-api command)))
+           (POST "/handler" {body :body} (let [text (-> body slurp json/read-str)] (println text) (map bot-api text)))
            (ANY "/repl" {:as req}
              (drawbridge req))
            (GET "/" []
@@ -69,6 +71,7 @@
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port) 5000))]
     (t/set-webhook token "https://privatka-bot.herokuapp.com/handler")
+    ;(def channel (p/start token "https://privatka-bot.herokuapp.com/handler"))
     (jetty/run-jetty (wrap-app #'app) {:port port :join? false})))
 
 ;; For interactive development:
