@@ -57,16 +57,18 @@
                          (t/send-text token id "Help is on the way"))
 
               (h/message message
-                         (do
-                                 (println "Intercepted message:" message)
-                                 (let [point (process-code message)]
-                                   (if-not (nil? point) (send-information point)) ) ) ))
-
+                         ))
+(defn core[message]
+  (do
+    (println "Intercepted message:" message)
+    (let [point (process-code message)]
+      (if-not (nil? point) (send-information point)) ) )
+  )
 (defroutes app
            (POST "/handler" {body :body}
                  (let [a (-> body slurp json/read-str)
                        command (get (get a "message") "text")]
-                   (do (println command) (map bot-api command))))
+                   (core command)))
            (ANY "/repl" {:as req}
              (drawbridge req))
            (GET "/" []
