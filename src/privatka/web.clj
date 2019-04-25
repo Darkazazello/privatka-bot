@@ -26,7 +26,7 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
-(def tasks (-> "tasks.json" slurp json/read-str) )
+(def tasks (-> "tasks.json" io/resource slurp json/read-str) )
 
 (defn process-code [code]
   (let [task (-> tasks :scenario (filter #(= code(:id %))))]
