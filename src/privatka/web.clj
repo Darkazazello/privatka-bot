@@ -26,6 +26,12 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
+(def tasks (-> "tasks.json" slupr json/read-str) )
+
+(defn process-code [code]
+  (let [task (-> tasks :scenario (filter #((:id %))))])
+  )
+
 (h/defhandler bot-api
               (h/command-fn "start" (fn [{{id :id :as chat} :chat}]
                                       (println "Bot joined new chat: " chat)
@@ -38,7 +44,7 @@
               (h/message message (println "Intercepted message:" message)))
 
 (defroutes app
-           (POST "/handler" {body :body}  (let [d (-> body slurp json/read-str)]  (do (println d) (map bot-api d) ) ))
+           (POST "/handler" {body :body}  (let [d (-> body slurp)]  (do (println d) (map bot-api d) ) ))
            (ANY "/repl" {:as req}
              (drawbridge req))
            (GET "/" []
