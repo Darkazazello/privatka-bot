@@ -29,24 +29,21 @@
 (def tasks (-> "tasks.json" io/resource slurp json/read-str) )
 
 (defn process-code [code]
-  (let [task (-> tasks :scenario (filter #(= code(:id %))))]
+  (let [t (get tasks "scenario")
+        task (filter #(= (get % "code") code) t)]
     (if (nil? task)
-      (print "Wrong" code)
-      (let [points (:points task)
+      (do (print "Wrong" code) nil)
+      (let [points (get (first task) "points")
             size (count points)
-            r (rand-int size)
-            ]
-        (nth points r)
-        )
-      ) )
-  )
+            r (rand-int size)]
+        (nth points r)))))
 
 (def cpu-chat "-325190028")
 
 (defn send-information [point]
   (do
-    (t/send-text token cpu-chat (:text point))
-    (t/send-photo token cpu-chat (io/file (io/resource (first (:files point)))))
+    (t/send-text token cpu-chat (get point "text"))
+    (t/send-photo token cpu-chat (io/file (io/resource (first (get point "files")))))
       )
   )
 
@@ -59,10 +56,17 @@
                          (println "Help was requested in " chat)
                          (t/send-text token id "Help is on the way"))
 
-              (h/message message (println "Intercepted message:" message)))
+              (h/message message
+                         (do
+                                 (println "Intercepted message:" message)
+                                 (let [point (process-code message)]
+                                   (if-not (nil? point) (send-information point)) ) ) ))
 
 (defroutes app
-           (POST "/handler" {body :body}  (let [d (-> body slurp)]  (do (println d) (map bot-api d) ) ))
+           (POST "/handler" {body :body}
+                 (let [a (-> body slurp json/read-str)
+                       command (get (get a "message") "text")]
+                   (do (println command) (map bot-api command))))
            (ANY "/repl" {:as req}
              (drawbridge req))
            (GET "/" []
