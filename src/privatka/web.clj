@@ -52,7 +52,7 @@
                                       (println "Bot joined new chat: " chat)
                                       (t/send-text token id "Welcome!")))
 
-              (h/command "help" {{id :id :as chat} :chat}
+              (h/command "help" {{id :id :as chat} :chadt}
                          (println "Help was requested in " chat)
                          (t/send-text token id "Help is on the way"))
 
