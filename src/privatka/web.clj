@@ -97,7 +97,7 @@
 
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port) 5000))]
-    ;(t/set-webhook token "https://privatka-bot.herokuapp.com/handler")
+    (t/set-webhook token "https://privatka-bot.herokuapp.com/handler")
     ;(def channel (p/start token "https://privatka-bot.herokuapp.com/handler"))
     (jetty/run-jetty (wrap-app #'app) {:port port :join? false})))
 
