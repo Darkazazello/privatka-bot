@@ -43,7 +43,7 @@
 (defn send-information [point]
   (do
     (t/send-text token cpu-chat (get point "text"))
-    (t/send-photo token cpu-chat (io/file (io/resource (first (get point "files")))))
+    (t/send-photo token cpu-chat (io/resource (first (get point "files"))))
       )
   )
 
