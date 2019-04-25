@@ -71,7 +71,7 @@
            (POST "/handler" {body :body}
                  (let [a (-> body slurp json/read-str)
                        command (get (get a "message") "text")]
-                   (core command)))
+                   (core command)) {:status 200})
            (ANY "/repl" {:as req}
              (drawbridge req))
            (GET "/" []
