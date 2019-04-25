@@ -10,7 +10,8 @@
             [ring.middleware.basic-authentication :as basic]
             [cemerick.drawbridge :as drawbridge]
             [environ.core :refer [env]]
-            [morse.api :as t]))
+            [morse.api :as t]
+            [morse.handlers :as h]))
 (def token (env :token))
 (defn- authenticated? [user pass]
   ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
@@ -21,23 +22,35 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
+(h/defhandler bot-api
+              (h/command-fn "start" (fn [{{id :id :as chat} :chat}]
+                                      (println "Bot joined new chat: " chat)
+                                      (t/send-text token id "Welcome!")))
+
+              (h/command "help" {{id :id :as chat} :chat}
+                         (println "Help was requested in " chat)
+                         (t/send-text token id "Help is on the way"))
+
+              (h/message message (println "Intercepted message:" message)))
+
 (defroutes app
-  (ANY "/repl" {:as req}
-       (drawbridge req))
-  (GET "/" []
-       {:status 200
-        :headers {"Content-Type" "text/plain"}
-        :body (pr-str ["Hello" :from 'Heroku (env :token)])})
-  (ANY "*" []
-       (route/not-found (slurp (io/resource "404.html")))))
+           (POST "/handler" {{updates :result} :body} (map bot-api updates))
+           (ANY "/repl" {:as req}
+             (drawbridge req))
+           (GET "/" []
+             {:status  200
+              :headers {"Content-Type" "text/plain"}
+              :body    (pr-str ["Hello" :from 'Heroku (env :token)])})
+           (ANY "*" []
+             (route/not-found (slurp (io/resource "404.html")))))
 
 (defn wrap-error-page [handler]
   (fn [req]
     (try (handler req)
          (catch Exception e
-           {:status 500
+           {:status  500
             :headers {"Content-Type" "text/html"}
-            :body (slurp (io/resource "500.html"))}))))
+            :body    (slurp (io/resource "500.html"))}))))
 
 (defn wrap-app [app]
   ;; TODO: heroku config:add SESSION_SECRET=$RANDOM_16_CHARS
