@@ -29,7 +29,14 @@
 (def tasks (-> "tasks.json" slupr json/read-str) )
 
 (defn process-code [code]
-  (let [task (-> tasks :scenario (filter #((:id %))))])
+  (let [task (-> tasks :scenario (filter #(= code(:id %))))]
+    (if (nil? task)
+      (print "Wrong" code)
+      (let [points (:points task)
+            size (count points)
+            random
+            ])
+      ) )
   )
 
 (h/defhandler bot-api
