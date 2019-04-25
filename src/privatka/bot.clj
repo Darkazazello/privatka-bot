@@ -2,9 +2,9 @@
   (ns user
       (:require [morse.handlers :as h]
                 [morse.api :as t]
-                [environ :as e]))
+                [environ.core :refer [env]]))
 
-  (def token ((e/env :token)))
+  (def token (env :token))
 
   ; This will define bot-api function, which later could be
   ; used to start your bot
