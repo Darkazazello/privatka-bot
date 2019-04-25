@@ -15,7 +15,8 @@
             [morse.api :as t]
             [morse.handlers :as h]
             [morse.polling :as p]
-            [clojure.data.json :as json]))
+            [clojure.data.json :as json]
+            [clojure.stacktrace]))
 (def token (env :token))
 (defn- authenticated? [user pass]
   ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
@@ -64,7 +65,7 @@
     (try
       (let [point (process-code message)]
         (if-not (nil? point) (send-information point)))
-      (catch Exception e (println (.getMessage e) (print-stack-trace e)))
+      (catch Exception e (println (.getMessage e) (clojure.stacktrace/print-stack-trace e)))
       )
     {:status 200}
     )
