@@ -1,9 +1,10 @@
 (ns privatka.bot
   (ns user
       (:require [morse.handlers :as h]
-                [morse.api :as t]))
+                [morse.api :as t]
+                [environ :as e]))
 
-  (def token "YOUR-BIG-SECRET")
+  (def token ((e/env :token)))
 
   ; This will define bot-api function, which later could be
   ; used to start your bot
