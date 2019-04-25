@@ -26,7 +26,7 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
-(def tasks (-> "tasks.json" slupr json/read-str) )
+(def tasks (-> "tasks.json" slurp json/read-str) )
 
 (defn process-code [code]
   (let [task (-> tasks :scenario (filter #(= code(:id %))))]
@@ -34,9 +34,20 @@
       (print "Wrong" code)
       (let [points (:points task)
             size (count points)
-            random
-            ])
+            r (rand-int n)
+            ]
+        (nth points r)
+        )
       ) )
+  )
+
+(def cpu-chat "-325190028")
+
+(defn send-information [point]
+  (do
+    (t/send-text token cpu-chat (:text point))
+    (t/send-photo token cpu-chat (io/file (io/resource (first (:files point)))))
+      )
   )
 
 (h/defhandler bot-api
