@@ -61,8 +61,11 @@
 (defn core[message]
   (do
     (println "Intercepted message:" message)
-    (let [point (process-code message)]
-      (if-not (nil? point) (send-information point)) ) )
+    (try
+      (let [point (process-code message)]
+        (if-not (nil? point) (send-information point)))
+      (catch Exception e (println (.getMessage e)))
+      ))
   )
 (defroutes app
            (POST "/handler" {body :body}
