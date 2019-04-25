@@ -6,6 +6,8 @@
             [ring.middleware.stacktrace :as trace]
             [ring.middleware.session :as session]
             [ring.middleware.session.cookie :as cookie]
+            [ring.middleware.json :refer [wrap-json-params]]
+            [ring.middleware.keyword-params :refer [wrap-keyword-params]]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.basic-authentication :as basic]
             [cemerick.drawbridge :as drawbridge]
@@ -34,7 +36,7 @@
               (h/message message (println "Intercepted message:" message)))
 
 (defroutes app
-           (POST "/handler" {body :body} (let [text (slurp body)] (println text) (map bot-api text)))
+           (POST "/handler" request (let [command (get-in request [:body :message :text])] (println command) (map bot-api command)))
            (ANY "/repl" {:as req}
              (drawbridge req))
            (GET "/" []
@@ -56,6 +58,9 @@
   ;; TODO: heroku config:add SESSION_SECRET=$RANDOM_16_CHARS
   (let [store (cookie/cookie-store {:key (env :session-secret)})]
     (-> app
+
+        wrap-keyword-params
+        wrap-json-params
         ((if (env :production)
            wrap-error-page
            trace/wrap-stacktrace))
