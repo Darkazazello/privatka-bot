@@ -29,5 +29,8 @@
 
     ; So match-all catch-through case would look something like this:
                 (h/message message (println "Intercepted message:" message)))
-  (t/set-webhook token "https://privatka-bot.herokuapp.com/")
-  )
+  (t/set-webhook token "https://privatka-bot.herokuapp.com/handler")
+  (defroutes app-routes
+             (POST "/handler" {{updates :result} :body} (map bot-api updates))
+             (route/not-found "Not Found"))
+  (:require [compojure.route :as route]))
