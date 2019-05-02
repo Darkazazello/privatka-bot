@@ -46,7 +46,7 @@
   (client/post (str "https://api.telegram.org/bot" token "/sendPhoto")
                {:multipart    [{:name "title" :content "Point"}
                                {:name "chat_id" :content cpu-chat}
-                               {:name "photo" :content (io/file (io/resource file))}]
+                               {:name "photo" :content file}]
                 })
   )
 
