@@ -3,7 +3,7 @@
   :url "http://helloworld.herokuapp.com"
   :license {:name "FIXME: choose"
             :url "http://example.com/FIXME"}
-  :dependencies [[org.clojure/clojure "1.6.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.1.8"]
                  [ring/ring-jetty-adapter "1.2.2"]
                  [ring/ring-devel "1.2.2"]

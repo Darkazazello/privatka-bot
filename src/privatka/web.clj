@@ -12,13 +12,12 @@
             [ring.middleware.basic-authentication :as basic]
             [cemerick.drawbridge :as drawbridge]
             [environ.core :refer [env]]
-            [morse.api :as t]
-            [morse.handlers :as h]
-            [morse.polling :as p]
             [clojure.data.json :as json]
             [clojure.stacktrace]
-            [clj-http.client :as client]))
+            [privatka.bot :refer [process-message]]
+            [morse.api :as t]))
 (def token (env :token))
+
 (defn- authenticated? [user pass]
   ;; TODO: heroku config:add REPL_USER=[...] REPL_PASSWORD=[...]
   (= [user pass] [(env :repl-user false) (env :repl-password false)]))
@@ -28,41 +27,11 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
-(def tasks (-> "tasks.json" io/resource slurp json/read-str))
-
-(defn process-code [code]
-  (let [t (get tasks "scenario")
-        task (filter #(= (get % "code") code) t)]
-    (if (nil? task)
-      (do (print "Wrong" code) nil)
-      (let [points (get (first task) "points")
-            size (count points)
-            r (rand-int size)]
-        (nth points r)))))
-
-(def cpu-chat "-325190028")
-
-(defn send-photo [file]
-  (client/post (str "https://api.telegram.org/bot" token "/sendPhoto")
-               {:multipart    [{:name "title" :content "Point"}
-                               {:name "chat_id" :content cpu-chat}
-                               {:name "photo" :content file}]
-                })
-  )
-
-(defn send-information [point]
-  (do
-    (t/send-text token cpu-chat (get point "text"))
-    (send-photo (first (get point "files")))
-    )
-  )
-
 (defn core [message]
   (do
     (println "Intercepted message:" message)
     (try
-      (let [point (process-code message)]
-        (if-not (nil? point) (send-information point)))
+      (process-message "-325190028"  message)
       (catch Exception e (println (.getMessage e) (clojure.stacktrace/print-stack-trace e)))
       )
     {:status 200}
@@ -72,7 +41,7 @@
            (POST "/handler" {body :body}
                  (let [a (-> body slurp json/read-str)
                        command (get (get a "message") "text")]
-                   (core command)))
+                   (do (println body) (core command)) ))
            (ANY "/repl" {:as req}
                 (drawbridge req))
            (GET "/" []
