@@ -46,33 +46,35 @@
 (defn- send-new-task [message]
   (let [point (find-message message)]
     (if-not (nil? point)
-      (do (send-text cbu-chat message)
+      (do (send-text cbu-chat (get point "text"))
           (send-photo cbu-chat (first (get point "files")))))))
 
-(defn- send-square-to-vs [message]
-  (send-text counter-chat (str "Группа РДГ замечена в квадрате " message)))
+(defn- send-square-to-vs [m]
+  (do (println m)
+      (send-text counter-chat (str "Группа РДГ замечена в квадрате " m))))
 
-(defn- send-point-to-vs [message]
-  (send-text counter-chat (str "БЛПА выявил группу РДГ в " message)))
+
+(defn- send-point-to-vs [m]
+  (send-text counter-chat (str "БЛПА выявил группу РДГ в " m)))
 
 (defn process-message [chat-id message]
   (if (= cbu-chat chat-id)
-    (cond (str/starts-with? message "/help") "Формат сообщений в ЦБУ: \n Найдена шифровка {шифрованый код} \n
+    (let [m (str/upper-case message)]
+      (cond (str/includes? m "help") "Формат сообщений в ЦБУ: \n Найдена шифровка {шифрованый код} \n
                                                  Находимся в квадрате {квадрат на карте} \n
                                                  Точное местоположение {квадрат+улитка}"
-          (str/starts-with? message (:find-message cbu-commands))
-                            (-> message
-                                (retrive-data (:find-message cbu-commands))
-                                send-new-task)
-          (str/starts-with? message (:current-square cbu-commands))
-                            (-> message
-                                (retrive-data (:current-square cbu-commands))
-                                send-square-to-vs)
-          (str/starts-with? message (:current-position cbu-commands))
-                            (-> message
-                                (retrive-data (:current-position cbu-commands))
-                                send-point-to-vs)
-          :else "zero")
-    (cond (str/starts-with? message "/help") "Формат сообщений в Штаб: \n Запуск БЛПА"
-          (str/starts-with? message (:blpa counter-commands)) (send-text cbu-chat "Срочно сообщите точное местоположение во избежания дружественного удара")
-          :else "zero")))
+            (str/starts-with? m (:find-message cbu-commands))
+              (send-new-task
+                (retrive-data (:find-message cbu-commands) m))
+            (str/starts-with? m (:current-square cbu-commands))
+              (send-square-to-vs
+                (retrive-data (:current-square cbu-commands) m))
+            (str/starts-with? m (:current-position cbu-commands))
+              (send-point-to-vs
+                (retrive-data (:current-position cbu-commands) m))
+            :else "zero")
+      (cond (str/starts-with? m "/help") "Формат сообщений в Штаб: \n Запуск БЛПА"
+            (str/starts-with? m (:blpa counter-commands)) (send-text cbu-chat "Срочно сообщите точное местоположение во избежания дружественного удара")
+            :else "zero")))
+      )
+

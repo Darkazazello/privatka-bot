@@ -1,0 +1,21 @@
+{
+  "update_id": 917018934,
+  "message": {
+    "message_id": 124,
+    "from": {
+      "id": 306941982,
+      "is_bot": false,
+      "first_name": "Semyon",
+      "last_name": "Semyonovich",
+      "language_code": "en"
+    },
+    "chat": {
+      "id": -325190028,
+      "title": "Privatka ЦБУ РДГ",
+      "type": "group",
+      "all_members_are_administrators": true
+    },
+    "date": 1557146289,
+    "text": 1234
+  }
+}

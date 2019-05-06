@@ -27,11 +27,11 @@
       (session/wrap-session)
       (basic/wrap-basic-authentication authenticated?)))
 
-(defn core [message]
+(defn core [chat-id message]
   (do
     (println "Intercepted message:" message)
     (try
-      (process-message "-325190028"  message)
+      (process-message chat-id  message)
       (catch Exception e (println (.getMessage e) (clojure.stacktrace/print-stack-trace e)))
       )
     {:status 200}
@@ -40,8 +40,9 @@
 (defroutes app
            (POST "/handler" {body :body}
                  (let [a (-> body slurp json/read-str)
-                       command (get (get a "message") "text")]
-                   (do (println a) (core command)) ))
+                       command (get-in a ["message" "text"])
+                       chat-id (str (get-in a ["message" "chat" "id"])) ]
+                   (do (println a) (core chat-id command)) ))
            (ANY "/repl" {:as req}
                 (drawbridge req))
            (GET "/" []
