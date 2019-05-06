@@ -31,16 +31,16 @@
 
 (defn- send-photo [chat-id file]
   (client/post (str "https://api.telegram.org/bot" token "/sendPhoto")
-               {:multipart    [{:name "title" :content "Point"}
-                               {:name "chat_id" :content chat-id}
-                               {:name "photo" :content file}]
+               {:multipart [{:name "title" :content "Point"}
+                            {:name "chat_id" :content chat-id}
+                            {:name "photo" :content file}]
                 }))
 
 (defn- send-text [chat-id text]
   (client/post (str "https://api.telegram.org/bot" token "/sendMessage")
-               {:multipart    [
-                               {:name "chat_id" :content chat-id}
-                               {:name "text" :content text}]
+               {:multipart [
+                            {:name "chat_id" :content chat-id}
+                            {:name "text" :content text}]
                 }))
 
 (defn- send-new-task [message]
@@ -58,23 +58,24 @@
   (send-text counter-chat (str "БЛПА выявил группу РДГ в " m)))
 
 (defn process-message [chat-id message]
-  (if (= cbu-chat chat-id)
-    (let [m (str/lower-case message)]
+  (let [m (str/lower-case message)]
+    (if (= cbu-chat chat-id)
+
       (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в ЦБУ: \n Найдена шифровка {шифрованый код} \n
                                                  Находимся в квадрате {квадрат на карте} \n
                                                  Точное местоположение {квадрат+улитка}")
             (str/starts-with? m (:find-message cbu-commands))
-              (send-new-task
-                (retrive-data (:find-message cbu-commands) m))
+            (send-new-task
+              (retrive-data (:find-message cbu-commands) m))
             (str/starts-with? m (:current-square cbu-commands))
-              (send-square-to-vs
-                (retrive-data (:current-square cbu-commands) m))
+            (send-square-to-vs
+              (retrive-data (:current-square cbu-commands) m))
             (str/starts-with? m (:current-position cbu-commands))
-              (send-point-to-vs
-                (retrive-data (:current-position cbu-commands) m))
+            (send-point-to-vs
+              (retrive-data (:current-position cbu-commands) m))
             :else "zero")
-      (cond (str/starts-with? m "/help") (send-text chat-id "Формат сообщений в Штаб: \n Запуск БЛПА")
+      (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в Штаб: \n Запуск БЛПА")
             (str/starts-with? m (:blpa counter-commands)) (send-text cbu-chat "Срочно сообщите точное местоположение во избежания дружественного удара")
             :else "zero")))
-      )
+  )
 
