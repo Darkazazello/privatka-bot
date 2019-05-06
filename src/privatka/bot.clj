@@ -61,8 +61,8 @@
   (let [m (str/lower-case message)]
     (if (= cbu-chat chat-id)
 
-      (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в ЦБУ: \n Найдена шифровка {шифрованый код} \n
-                                                 Находимся в квадрате {квадрат на карте} \n
+      (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в ЦБУ: \n Найдена шифровка {шифрованый код}
+                                                 Находимся в квадрате {квадрат на карте}
                                                  Точное местоположение {квадрат+улитка}")
             (str/starts-with? m (:find-message cbu-commands))
             (send-new-task
