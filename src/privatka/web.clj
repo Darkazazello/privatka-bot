@@ -41,7 +41,7 @@
            (POST "/handler" {body :body}
                  (let [a (-> body slurp json/read-str)
                        command (get (get a "message") "text")]
-                   (do (println body) (core command)) ))
+                   (do (println a) (core command)) ))
            (ANY "/repl" {:as req}
                 (drawbridge req))
            (GET "/" []
