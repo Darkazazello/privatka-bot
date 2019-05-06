@@ -11,9 +11,9 @@
 (def tasks (-> "tasks.json" io/resource slurp json/read-str))
 (def cbu-chat "-325190028")
 (def counter-chat "-353786595")
-(def cbu-commands {:find-message "Найдена шифровка" :current-square "Находимся в квадрате" :current-position "Точное местоположение"})
-(def cbu-messages {:get-current-position "Сообщите точное местоположение" :get-current-square "Сообщите квадрат местоположения"})
-(def counter-commands {:blpa "Запуск БЛПА"})
+(def cbu-commands {:find-message "найдена шифровка" :current-square "находимся в квадрате" :current-position "точное местоположение"})
+(def cbu-messages {:get-current-position "сообщите точное местоположение" :get-current-square "сообщите квадрат местоположения"})
+(def counter-commands {:blpa "запуск блпа"})
 
 (defn- find-message [code]
   (let [t (get tasks "scenario")
@@ -59,10 +59,10 @@
 
 (defn process-message [chat-id message]
   (if (= cbu-chat chat-id)
-    (let [m (str/upper-case message)]
-      (cond (str/includes? m "help") "Формат сообщений в ЦБУ: \n Найдена шифровка {шифрованый код} \n
+    (let [m (str/lower-case message)]
+      (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в ЦБУ: \n Найдена шифровка {шифрованый код} \n
                                                  Находимся в квадрате {квадрат на карте} \n
-                                                 Точное местоположение {квадрат+улитка}"
+                                                 Точное местоположение {квадрат+улитка}")
             (str/starts-with? m (:find-message cbu-commands))
               (send-new-task
                 (retrive-data (:find-message cbu-commands) m))
@@ -73,7 +73,7 @@
               (send-point-to-vs
                 (retrive-data (:current-position cbu-commands) m))
             :else "zero")
-      (cond (str/starts-with? m "/help") "Формат сообщений в Штаб: \n Запуск БЛПА"
+      (cond (str/starts-with? m "/help") (send-text chat-id "Формат сообщений в Штаб: \n Запуск БЛПА")
             (str/starts-with? m (:blpa counter-commands)) (send-text cbu-chat "Срочно сообщите точное местоположение во избежания дружественного удара")
             :else "zero")))
       )
