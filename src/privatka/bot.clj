@@ -77,5 +77,5 @@
       (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в Штаб: \n Запуск БЛПА БЛПА")
             (str/starts-with? m (:blpa counter-commands)) (send-text cbu-chat "Срочно сообщите точное местоположение во избежания дружественного удара")
             :else "zero")))
-  )
+  ))
 
