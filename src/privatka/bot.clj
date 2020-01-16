@@ -69,12 +69,12 @@
 
       (cond 
         (str/includes? m "help") (send-text chat-id help-message)
-        (str/starts-with? m (:find-message cbu-commands)) (send-new-task (retrive-data (:find-message cbu-commands) m))
-        (str/starts-with? m (:current-square cbu-commands)) (send-square-to-vs (retrive-data (:current-square cbu-commands) m))
-        (str/starts-with? m (:current-position cbu-commands)) (send-point-to-vs (retrive-data (:current-position cbu-commands) m))
+        (str/includes? m (:find-message cbu-commands)) (send-new-task (retrive-data (:find-message cbu-commands) m))
+        (str/includes? m (:current-square cbu-commands)) (send-square-to-vs (retrive-data (:current-square cbu-commands) m))
+        (str/includes? m (:current-position cbu-commands)) (send-point-to-vs (retrive-data (:current-position cbu-commands) m))
         :else "zero")
       (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в Штаб: \n Запуск БЛПА БЛПА")
-            (str/starts-with? m (:blpa counter-commands)) (send-text cbu-chat fire-warning)
+            (str/includes? m (:blpa counter-commands)) (send-text cbu-chat fire-warning)
             :else "zero")))
   )
 
