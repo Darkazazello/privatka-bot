@@ -13,7 +13,7 @@
 (def counter-chat "-353786595")
 (def cbu-commands {:find-message "Ш" :current-square "КК" :current-position "КУ"})
 (def cbu-messages {:get-current-position "сообщите точное местоположение" :get-current-square "сообщите квадрат местоположения"})
-(def counter-commands {:blpa "запуск блпа"})
+(def counter-commands {:blpa "БЛПА"})
 
 (defn- find-message [code]
   (let [t (get tasks "scenario")
@@ -74,7 +74,7 @@
             (send-point-to-vs
               (retrive-data (:current-position cbu-commands) m))
             :else "zero")
-      (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в Штаб: \n Запуск БЛПА")
+      (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в Штаб: \n Запуск БЛПА БЛПА")
             (str/starts-with? m (:blpa counter-commands)) (send-text cbu-chat "Срочно сообщите точное местоположение во избежания дружественного удара")
             :else "zero")))
   )
