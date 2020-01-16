@@ -63,7 +63,7 @@
 
       (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в ЦБУ: \n Для сообщения найдена шифровка: Ш <шифровка>. Пример Ш 1234  
                                                  Для сообщения квадрата: КК <квадрат>. Пример КК квадрат 11-55
-                                                 Для сообщения точного местоположения: КУ <квадрат и улитка. Пример КУ 11-55 по улитке 3"
+                                                 Для сообщения точного местоположения: КУ <квадрат и улитка. Пример КУ 11-55 по улитке 3")
             (str/starts-with? m (:find-message cbu-commands))
             (send-new-task
               (retrive-data (:find-message cbu-commands) m))
@@ -77,5 +77,5 @@
       (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в Штаб: \n Запуск БЛПА БЛПА")
             (str/starts-with? m (:blpa counter-commands)) (send-text cbu-chat "Срочно сообщите точное местоположение во избежания дружественного удара")
             :else "zero")))
-  ))
+  )
 
