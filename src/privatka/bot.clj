@@ -11,7 +11,7 @@
 (def tasks (-> "tasks.json" io/resource slurp json/read-str))
 (def cbu-chat "-325190028")
 (def counter-chat "-353786595")
-(def cbu-commands {:find-message "найдена шифровка" :current-square "находимся в квадрате" :current-position "точное местоположение"})
+(def cbu-commands {:find-message "Ш" :current-square "КК" :current-position "КУ"})
 (def cbu-messages {:get-current-position "сообщите точное местоположение" :get-current-square "сообщите квадрат местоположения"})
 (def counter-commands {:blpa "запуск блпа"})
 
@@ -61,9 +61,9 @@
   (let [m (str/lower-case message)]
     (if (= cbu-chat chat-id)
 
-      (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в ЦБУ: \n Найдена шифровка {шифрованый код}
-                                                 Находимся в квадрате {квадрат на карте}
-                                                 Точное местоположение {квадрат+улитка}")
+      (cond (str/includes? m "help") (send-text chat-id "Формат сообщений в ЦБУ: \n Для сообщения найдена шифровка: Ш <шифровка>. Пример Ш 1234  
+                                                 Для сообщения квадрата: КК <квадрат>. Пример КК квадрат 11-55
+                                                 Для сообщения точного местоположения: КУ <квадрат и улитка. Пример КУ 11-55 по улитке 3
             (str/starts-with? m (:find-message cbu-commands))
             (send-new-task
               (retrive-data (:find-message cbu-commands) m))
