@@ -74,14 +74,6 @@
 
 (def milisecs-to-wait 3600000)
 (def is-game-started (atom true))
-(defn what-you-want-to-do []
-  (println "working"))
-
-(defn evaluate-condition []
-  @the-condition)
-
-(defn stop-periodic-function []
-  (reset! the-condition false ))
 
 (defn ping-to-drg []
   (go
@@ -93,12 +85,6 @@
   (if (str/re-find #"^ш*гео*$" m)
     :true
     :false))
-
-(defn- send-coordinate[m]
-  (let [coor (last(str/split m #"гео"))]
-
-    )
-  )
 
 (defn process-message [chat-id message]
   (let [m (str/lower-case message)]
@@ -120,4 +106,3 @@
             (str/includes? m (:end-game counter-command)) (do (reset! is-game-started false))
             :else (send-text chat-id "Сообщение не принято, повторите передачу."))))
   )
-
