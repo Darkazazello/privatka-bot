@@ -82,7 +82,7 @@
       (send-text cbu-chat (::get-current-square cbu-messages)))))
 
 (defn- is-encoded-message[m]
-  (if (str/re-find #"^ш*гео*$" m)
+  (if (re-find #"^ш*гео*$" m)
     :true
     :false))
 
@@ -102,7 +102,7 @@
         :else (send-text chat-id "Сообщение не принято, повторите передачу."))
       (cond (str/includes? m "help") (send-text chat-id contr-cbu-message)
             (str/includes? m (:blpa counter-commands)) (send-text cbu-chat fire-warning)
-            (str/includes? m (:start-game counter-command)) (do (reset! is-game-started true) ping-to-drg)
-            (str/includes? m (:end-game counter-command)) (do (reset! is-game-started false))
+            (str/includes? m (:start-game counter-commands)) (do (reset! is-game-started true) ping-to-drg)
+            (str/includes? m (:end-game counter-commands)) (do (reset! is-game-started false))
             :else (send-text chat-id "Сообщение не принято, повторите передачу."))))
   )
