@@ -82,7 +82,7 @@
       (send-text cbu-chat (::get-current-square cbu-messages)))))
 
 (defn- is-encoded-message[m]
-  (if (re-find #"^ш*гео*$" m)
+  (if (re-find #"^ш.*гео.*$" m)
     :true
     :false))
 
