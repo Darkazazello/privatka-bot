@@ -95,8 +95,9 @@
         (= (is-encoded-message m) :true) (let [p1 (first (str/split m #"гео"))
                                      p2 (last (str/split m #"гео"))]
                                  (do
+                                   (send-new-task (retrive-data (:find-message cbu-commands) p1))
                                   (send-text counter-chat (str/join [meet-message p2]))
-                                  (send-new-task (retrive-data (:find-message cbu-commands) p1))))
+                                  ))
         (str/includes? m (:current-square cbu-commands)) (send-square-to-vs (retrive-data (:current-square cbu-commands) m))
         (str/includes? m (:current-position cbu-commands)) (send-point-to-vs (retrive-data (:current-position cbu-commands) m))
         :else (send-text chat-id "Сообщение не принято, повторите передачу."))
