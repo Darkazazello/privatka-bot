@@ -92,7 +92,7 @@
 
       (cond 
         (str/includes? m "help") (send-text chat-id help-message)
-        (is-encoded-message m) (let [p1 (first (str/split m #"гео"))
+        (= (is-encoded-message m) :true) (let [p1 (first (str/split m #"гео"))
                                      p2 (last (str/split m #"гео"))]
                                  (do
                                   (send-text counter-chat (str/join [meet-message p2]))
