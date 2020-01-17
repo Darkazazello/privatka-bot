@@ -10,16 +10,18 @@
 
 (def token (env :token))
 (def tasks (-> "tasks.json" io/resource slurp json/read-str))
+;(def points (-> "points.json" io/resource slurp json/read-str))
 (def cbu-chat "-325190028")
 (def counter-chat "-353786595")
-(def cbu-commands {:find-message "ш" :current-square "кк" :current-position "ку"})
+(def cbu-commands {:find-message "ш" :current-square "кк" :current-position "ку" :evacuation-point "пе"})
 (def cbu-messages {:get-current-position "сообщите точное местоположение" :get-current-square "сообщите квадрат местоположения"})
 (def counter-commands {:blpa "бпла" :start-game "красный одуванчик" :end-game "стоп"})
 
 (def help-message "Формат сообщений в ЦБУ:
 Для сообщения найдена шифровка: Ш <шифровка> Гео <гео координаты>. Пример Ш 1234 Гео 55.11.33 37.11.22
 Для сообщения квадрата: КК <квадрат>. Пример КК квадрат 11-55
-Для сообщения точного местоположения: КУ <квадрат и улитка. Пример КУ 11-55 по улитке 3")
+Для сообщения точного местоположения: КУ <квадрат и улитка. Пример КУ 11-55 по улитке 3
+Для сообщения начать эвакуацию: ПЕ <код пункта эвакуации>. Пример ПЕ 093")
 
 (def contr-cbu-message "Формат сообщений в Штаб:
 Запуск БПЛА БПЛА
@@ -86,6 +88,11 @@
     :true
     :false))
 
+(defn- send-ep [point-code]
+(let [t (get tasks "points")
+      coordinate (get (first (filter #(= (get % "code") point-code) t)) "coordinate") ]
+  (send-text counter-chat (str/join "ДРГ начала процедуру эвакуации в точке " coordinate) )))
+
 (defn process-message [chat-id message]
   (let [m (str/lower-case message)]
     (if (= cbu-chat chat-id)
@@ -100,6 +107,7 @@
                                   ))
         (str/includes? m (:current-square cbu-commands)) (send-square-to-vs (retrive-data (:current-square cbu-commands) m))
         (str/includes? m (:current-position cbu-commands)) (send-point-to-vs (retrive-data (:current-position cbu-commands) m))
+        (str/includes? m (:evacuation-point cbu-commands)) (send-ep (retrive-data (:evacuation-point cbu-commands) m))
         :else (send-text chat-id "Сообщение не принято, повторите передачу."))
       (cond (str/includes? m "help") (send-text chat-id contr-cbu-message)
             (str/includes? m (:blpa counter-commands)) (send-text cbu-chat fire-warning)
