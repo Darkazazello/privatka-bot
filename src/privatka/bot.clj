@@ -85,7 +85,7 @@
   (go
     (while (@is-game-started)
       (<! (timeout milisecs-to-wait))
-      (send-text cbu-chat (::get-current-square cbu-messages)))))
+      (send-text cbu-chat (:get-current-square cbu-messages)))))
 
 (defn- is-encoded-message[m]
   (if (re-find #"^ш.*гео.*$" m)
