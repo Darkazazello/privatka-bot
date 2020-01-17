@@ -64,7 +64,11 @@
   (let [point (find-message message)]
     (if-not (nil? point)
       (do (send-text cbu-chat (get point "text"))
-          (send-photo cbu-chat (first (get point "files")))))))
+          (doseq [photo (get point "files")]
+            (send-photo cbu-chat photo)
+            )
+          ))))
+
 
 (defn- send-square-to-vs [m]
   (do (println m)
