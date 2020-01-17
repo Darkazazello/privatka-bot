@@ -78,7 +78,7 @@
 (defn- send-point-to-vs [m]
   (send-text counter-chat (str "БПЛА выявил группу ДРГ в " m)))
 
-(def milisecs-to-wait 3600000)
+(def milisecs-to-wait 360)
 (def is-game-started (atom true))
 
 (defn ping-to-drg []
