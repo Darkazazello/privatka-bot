@@ -95,7 +95,7 @@
 (defn- send-ep [point-code]
 (let [t (get tasks "points")
       coordinate (get (first (filter #(= (get % "code") point-code) t)) "coordinate") ]
-  (send-text counter-chat (str/join "ДРГ начала процедуру эвакуации в точке " coordinate) )))
+  (send-text counter-chat (str/join ["ДРГ начала процедуру эвакуации в точке " coordinate]) )))
 
 (defn process-message [chat-id message]
   (let [m (str/lower-case message)]
