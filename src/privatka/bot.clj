@@ -13,18 +13,18 @@
 ;(def points (-> "points.json" io/resource slurp json/read-str))
 (def cbu-chat "-1001360449621")
 (def counter-chat "-1001409162263")
-(def cbu-commands {:find-message "ш" :current-square "кк" :current-position "ку" :evacuation-point "пе"})
+(def cbu-commands {:find-message "ш" :current-square "кк" :current-position "кку" :evacuation-point "пе"})
 (def cbu-messages {:get-current-position "сообщите точное местоположение" :get-current-square "сообщите квадрат местоположения"})
 (def counter-commands {:blpa "бпла" :start-game "красный одуванчик" :end-game "стоп"})
 
-(def help-message "Формат сообщений в ЦБУ:
-Для сообщения найдена шифровка: Ш <шифровка> Гео <гео координаты>. Пример Ш 1234 Гео 55.11.33 37.11.22
-Для сообщения квадрата: КК <квадрат>. Пример КК квадрат 11-55
-Для сообщения точного местоположения: КУ <квадрат и улитка. Пример КУ 11-55 по улитке 3
-Для сообщения начать эвакуацию: ПЕ <код пункта эвакуации>. Пример ПЕ 093")
+(def help-message "Формат сообщений ДРГ в ЦБУ:
+Передача кода точки: Ш <код> К <текущие географические координаты группы>. \\n Пример Ш 1234 К N 53° 52.617', E 027° 47.750'
+Передача квадрата группы: КК <квадрат>. \\nПример КК 11-55 \\n
+Передача уточненных координат: ККУ <квадрат и улитка. \\n Пример ККУ 11-55 у 3
+Запрос эвакуации: ПЕ <код пункта эвакуации>. Пример ПЕ 093")
 
 (def contr-cbu-message "Формат сообщений в Штаб:
-Запуск БПЛА БПЛА")
+Запрос вылета БПЛА: БПЛА")
 ;Активация сети информаторов Красный одуванчик
 ;Отбой для сети информаторов Стоп")
 
@@ -88,7 +88,7 @@
       (send-text cbu-chat (:get-current-square cbu-messages)))))
 
 (defn- is-encoded-message[m]
-  (if (re-find #"^ш.*гео.*$" m)
+  (if (re-find #"^ш.*к.*$" m)
     :true
     :false))
 
@@ -103,8 +103,8 @@
 
       (cond 
         (str/includes? m "help") (send-text chat-id help-message)
-        (= (is-encoded-message m) :true) (let [p1 (first (str/split m #"гео"))
-                                     p2 (last (str/split m #"гео"))]
+        (= (is-encoded-message m) :true) (let [p1 (first (str/split m #"к"))
+                                     p2 (last (str/split m #"к"))]
                                  (do
                                    (send-new-task (retrive-data (:find-message cbu-commands) p1))
                                   (send-text counter-chat (str/join [meet-message p2]))
